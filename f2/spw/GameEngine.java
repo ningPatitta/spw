@@ -15,12 +15,14 @@ public class GameEngine implements KeyListener, GameReporter{
 	GamePanel gp;
 		
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
+	private ArrayList<ItemUmbella> umbellas = new ArrayList<ItemUmbella>();
 	private SpaceShip v;	
 	
 	private Timer timer;
 	
 	private long score = 0;
 	private double difficulty = 0.1;
+	private double genUmbel = 0.03;
 	
 	public GameEngine(GamePanel gp, SpaceShip v) {
 		this.gp = gp;
@@ -43,6 +45,12 @@ public class GameEngine implements KeyListener, GameReporter{
 		timer.start();
 	}
 	
+	private void generateItemUmbella(){
+		ItemUmbella u = new ItemUmbella((int)(Math.random()*390), 10); 
+		gp.sprites.add(u);
+		umbellas.add(u);
+	}
+	
 	private void generateEnemy(){
 		Enemy e = new Enemy((int)(Math.random()*390), 30);
 		gp.sprites.add(e);
@@ -53,8 +61,12 @@ public class GameEngine implements KeyListener, GameReporter{
 		if(Math.random() < difficulty){
 			generateEnemy();
 		}
-		
+		if(Math.random() <genUmbel){
+			generateItemUmbella();
+		}
 		Iterator<Enemy> e_iter = enemies.iterator();
+		Iterator<ItemUmbella> u_iter = umbellas.iterator();
+		
 		while(e_iter.hasNext()){
 			Enemy e = e_iter.next();
 			e.proceed();
@@ -64,6 +76,10 @@ public class GameEngine implements KeyListener, GameReporter{
 				gp.sprites.remove(e);
 				score += 100;
 			}
+		}
+		while(u_iter.hasNext()){
+			ItemUmbella u = u_iter.next();
+			u.proceed();
 		}
 		
 		gp.updateGameUI(this);
