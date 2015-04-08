@@ -22,7 +22,7 @@ public class GameEngine implements KeyListener, GameReporter{
 	
 	private long score = 0;
 	private double difficulty = 0.1;
-	private double genUmbel = 0.03;
+	private double genUmbel = 0.09;
 	
 	public GameEngine(GamePanel gp, SpaceShip v) {
 		this.gp = gp;
@@ -64,9 +64,8 @@ public class GameEngine implements KeyListener, GameReporter{
 		if(Math.random() <genUmbel){
 			generateItemUmbella();
 		}
-		Iterator<Enemy> e_iter = enemies.iterator();
-		Iterator<ItemUmbella> u_iter = umbellas.iterator();
 		
+		Iterator<Enemy> e_iter = enemies.iterator();
 		while(e_iter.hasNext()){
 			Enemy e = e_iter.next();
 			e.proceed();
@@ -77,26 +76,48 @@ public class GameEngine implements KeyListener, GameReporter{
 				score += 100;
 			}
 		}
+		
+		Iterator<ItemUmbella> u_iter = umbellas.iterator();
 		while(u_iter.hasNext()){
 			ItemUmbella u = u_iter.next();
 			u.proceed();
+			
+			if(!u.isAlive()){
+				u_iter.remove();
+				gp.sprites.remove(u);
+				score += 300;
+			}
 		}
 		
 		gp.updateGameUI(this);
 		
 		Rectangle2D.Double vr = v.getRectangle();
 		Rectangle2D.Double er;
+		Rectangle2D.Double umbel;
 		for(Enemy e : enemies){
 			er = e.getRectangle();
 			if(er.intersects(vr)){
-				die();
+				//die();
 				return;
 			}
 		}
-	}
+		for(ItemUmbella u : umbellas){
+			umbel = u.getRectangle();
+			if(umbel.intersects(vr)){
+				u.notAlive();
+				generateUmbella();
+				
+			}
+		}
 	
+	}
 	public void die(){
 		timer.stop();
+	}
+	
+	void generateUmbella(){
+		Umbella umbel = new Umbella(v);
+		gp.sprites.add(umbel);
 	}
 	
 	void controlVehicle(KeyEvent e) {

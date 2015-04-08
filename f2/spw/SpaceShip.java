@@ -40,5 +40,21 @@ public class SpaceShip extends Sprite{
 		if(x > 400 - width)
 			x = 400 - width;
 	}
+	
+	public int getXPosition(){
+		return x;
+	}
+	
+	public int getYPosition(){
+		return y;
+	}
+	
+	public int getWidth(){
+		return width;
+	}
+	
+	public int getHeight(){
+		return height;
+	}
 
 }

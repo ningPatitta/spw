@@ -13,7 +13,7 @@ public class ItemUmbella extends Sprite{
 	public static final int Y_TO_FADE = 400;
 	public static final int Y_TO_DIE = 600;
 	
-	private String picUmbell;
+	private String picItemUmbella;
 	private Image picture;
 	
 	private int step = 15;
@@ -22,9 +22,8 @@ public class ItemUmbella extends Sprite{
 	public ItemUmbella(int x, int y){
 		super(x, y, 20, 20);
 		try{
-			//picUmbell = "...//img/umbella.gif";
-			picUmbell = "E:/My Couse/242-210 fundamental programmingII/spw/f2/spw/img/umbella.gif";
-			picture = ImageIO.read(new File(picUmbell));
+			picItemUmbella = "f2/spw/img/umbelitem.gif";
+			picture = ImageIO.read(new File(picItemUmbella));
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -44,5 +43,10 @@ public class ItemUmbella extends Sprite{
 	
 	public boolean isAlive(){
 		return alive;
+	}
+	
+	public void notAlive(){
+		alive = false;
+
 	}
 }

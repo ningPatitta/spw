@@ -20,10 +20,10 @@ public class Enemy extends Sprite{
 	private boolean alive = true;
 	
 	public Enemy(int x, int y) {
-		super(x, y, 15, 20);
+		super(x, y, 20, 20);
 		try{
-			//picEnemy = "...//img/enemy.PNG";
-			picEnemy = "E:/My Couse/242-210 fundamental programmingII/spw/f2/spw/img/enemy.png";
+			//picEnemy = "...//img/enemy.gif";
+			picEnemy = "E:/My Couse/242-210 fundamental programmingII/spw/f2/spw/img/enemy.gif";
 			picture = ImageIO.read(new File(picEnemy));
 		}catch(IOException e){
 			e.printStackTrace();
