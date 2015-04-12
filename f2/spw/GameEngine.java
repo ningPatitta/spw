@@ -22,7 +22,11 @@ public class GameEngine implements KeyListener, GameReporter{
 	
 	private long score = 0;
 	private double difficulty = 0.1;
-	private double genUmbel = 0.09;
+	private double genUmbel = 0.01;
+	
+	private Umbella umbel = null;
+	private int timeUmbel = 0;
+	private boolean statusUmbel = false;
 	
 	public GameEngine(GamePanel gp, SpaceShip v) {
 		this.gp = gp;
@@ -93,30 +97,48 @@ public class GameEngine implements KeyListener, GameReporter{
 		
 		Rectangle2D.Double vr = v.getRectangle();
 		Rectangle2D.Double er;
-		Rectangle2D.Double umbel;
+		Rectangle2D.Double itemUmbel;
+		Rectangle2D.Double umbella;
 		for(Enemy e : enemies){
 			er = e.getRectangle();
 			if(er.intersects(vr)){
-				//die();
+				die();
 				return;
+			}
+			if(statusUmbel){
+				umbella = umbel.getRectangle();
+				if(er.intersects(umbella)){
+					timeUmbel = 0;	
+					e.notAlive();
+				}
 			}
 		}
 		for(ItemUmbella u : umbellas){
-			umbel = u.getRectangle();
-			if(umbel.intersects(vr)){
+			itemUmbel = u.getRectangle();
+			if(itemUmbel.intersects(vr)){
 				u.notAlive();
-				generateUmbella();
-				
+				if(!statusUmbel){
+					generateUmbella();
+					timeUmbel = 320;
+					statusUmbel = true;
+				}
 			}
 		}
-	
+		if(timeUmbel > 0){
+			timeUmbel--;
+		}
+		else{
+			statusUmbel = false;
+			gp.sprites.remove(umbel);
+			umbel = null;
+		}
 	}
 	public void die(){
 		timer.stop();
 	}
 	
 	void generateUmbella(){
-		Umbella umbel = new Umbella(v);
+		umbel = new Umbella(v);
 		gp.sprites.add(umbel);
 	}
 	
@@ -124,9 +146,15 @@ public class GameEngine implements KeyListener, GameReporter{
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_LEFT:
 			v.move(-1);
+			if(umbel != null){
+				umbel.getPosition();
+			}
 			break;
 		case KeyEvent.VK_RIGHT:
 			v.move(1);
+			if(umbel != null){
+				umbel.getPosition();
+			}
 			break;
 		case KeyEvent.VK_D:
 			difficulty += 0.1;
