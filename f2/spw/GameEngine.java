@@ -16,6 +16,8 @@ public class GameEngine implements KeyListener, GameReporter{
 		
 	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
 	private ArrayList<ItemUmbella> umbellas = new ArrayList<ItemUmbella>();
+	private ArrayList<ItemClear> clears = new ArrayList<ItemClear>();
+	
 	private SpaceShip v;	
 	
 	private Timer timer;
@@ -23,6 +25,7 @@ public class GameEngine implements KeyListener, GameReporter{
 	private long score = 0;
 	private double difficulty = 0.1;
 	private double genUmbel = 0.01;
+	private double genClear = 0.005;
 	
 	private Umbella umbel = null;
 	private int timeUmbel = 0;
@@ -41,18 +44,11 @@ public class GameEngine implements KeyListener, GameReporter{
 				process();
 			}
 		});
-		timer.setRepeats(true);
-		
+		timer.setRepeats(true);	
 	}
 	
 	public void start(){
 		timer.start();
-	}
-	
-	private void generateItemUmbella(){
-		ItemUmbella u = new ItemUmbella((int)(Math.random()*390), 10); 
-		gp.sprites.add(u);
-		umbellas.add(u);
 	}
 	
 	private void generateEnemy(){
@@ -61,12 +57,27 @@ public class GameEngine implements KeyListener, GameReporter{
 		enemies.add(e);
 	}
 	
+	private void generateItemUmbella(){
+		ItemUmbella u = new ItemUmbella((int)(Math.random()*390), 10); 
+		gp.sprites.add(u);
+		umbellas.add(u);
+	}
+	
+	private void generateItemClear(){
+		ItemClear c = new ItemClear((int)(Math.random()*390), 10);
+		gp.sprites.add(c);
+		clears.add(c);
+	}
+	
 	private void process(){
 		if(Math.random() < difficulty){
 			generateEnemy();
 		}
-		if(Math.random() <genUmbel){
+		if(Math.random() < genUmbel){
 			generateItemUmbella();
+		}
+		if(Math.random() < genClear){
+			generateItemClear();
 		}
 		
 		Iterator<Enemy> e_iter = enemies.iterator();
@@ -93,12 +104,25 @@ public class GameEngine implements KeyListener, GameReporter{
 			}
 		}
 		
+		Iterator<ItemClear> c_iter = clears.iterator();
+		while(c_iter.hasNext()){
+			ItemClear c = c_iter.next();
+			c.proceed();
+			
+			if(!c.isAlive()){
+				c_iter.remove();
+				gp.sprites.remove(c);
+				score += 500;
+			}
+		}
+		
 		gp.updateGameUI(this);
 		
 		Rectangle2D.Double vr = v.getRectangle();
 		Rectangle2D.Double er;
 		Rectangle2D.Double itemUmbel;
 		Rectangle2D.Double umbella;
+		Rectangle2D.Double itemClears;
 		for(Enemy e : enemies){
 			er = e.getRectangle();
 			if(er.intersects(vr)){
@@ -124,6 +148,14 @@ public class GameEngine implements KeyListener, GameReporter{
 				}
 			}
 		}
+		for(ItemClear c : clears){
+			itemClears = c.getRectangle();
+			if(itemClears.intersects(vr)){
+				c.notAlive();
+				clearEnemy();
+			}
+		}
+		
 		if(timeUmbel > 0){
 			timeUmbel--;
 		}
@@ -161,7 +193,14 @@ public class GameEngine implements KeyListener, GameReporter{
 			break;
 		}
 	}
-
+	
+	public void clearEnemy(){
+		for(Enemy e : enemies){
+			e.notAlive();
+			gp.sprites.remove(e);
+		}
+	}
+	
 	public long getScore(){
 		return score;
 	}
