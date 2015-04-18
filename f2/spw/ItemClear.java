@@ -16,11 +16,11 @@ public class ItemClear extends Sprite{
 	private String picItemClear;
 	private Image picture;
 	
-	private int step = 12;
+	private int step = 8;
 	private boolean alive = true;
 	
 	public ItemClear(int x, int y){
-		super(x, y, 20, 20);
+		super(x, y, 30, 30);
 		try{
 			picItemClear = "f2/spw/img/clear.gif";
 			picture = ImageIO.read(new File(picItemClear));

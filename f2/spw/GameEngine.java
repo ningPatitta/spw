@@ -14,28 +14,30 @@ import javax.swing.Timer;
 public class GameEngine implements KeyListener, GameReporter{
 	GamePanel gp;
 		
-	private ArrayList<Enemy> enemies = new ArrayList<Enemy>();	
+	private ArrayList<RotFruit> rotFruits = new ArrayList<RotFruit>();	
+	private ArrayList<Fruit> fruits = new ArrayList<Fruit>();	
 	private ArrayList<ItemUmbella> umbellas = new ArrayList<ItemUmbella>();
 	private ArrayList<ItemClear> clears = new ArrayList<ItemClear>();
 	
-	private SpaceShip v;	
+	private Basket b;	
 	
 	private Timer timer;
 	
 	private long score = 0;
-	private double difficulty = 0.1;
-	private double genUmbel = 0.01;
+	private double genRotFruit = 0.05;
+	private double genFruit = 0.1;
+	private double genUmbel = 0.007;
 	private double genClear = 0.005;
 	
 	private Umbella umbel = null;
 	private int timeUmbel = 0;
 	private boolean statusUmbel = false;
 	
-	public GameEngine(GamePanel gp, SpaceShip v) {
+	public GameEngine(GamePanel gp, Basket b) {
 		this.gp = gp;
-		this.v = v;		
+		this.b = b;		
 		
-		gp.sprites.add(v);
+		gp.sprites.add(b);
 		
 		timer = new Timer(50, new ActionListener() {
 			
@@ -51,10 +53,16 @@ public class GameEngine implements KeyListener, GameReporter{
 		timer.start();
 	}
 	
-	private void generateEnemy(){
-		Enemy e = new Enemy((int)(Math.random()*390), 30);
-		gp.sprites.add(e);
-		enemies.add(e);
+	private void generateRotFruit(){
+		RotFruit rt = new RotFruit((int)(Math.random()*390), 30);
+		gp.sprites.add(rt);
+		rotFruits.add(rt);
+	}
+	
+	private void generateFruit(){
+		Fruit f = new Fruit((int)(Math.random()*390), 30);
+		gp.sprites.add(f);
+		fruits.add(f);
 	}
 	
 	private void generateItemUmbella(){
@@ -70,8 +78,11 @@ public class GameEngine implements KeyListener, GameReporter{
 	}
 	
 	private void process(){
-		if(Math.random() < difficulty){
-			generateEnemy();
+		if(Math.random() < genRotFruit){
+			generateRotFruit();
+		}
+		if(Math.random() < genFruit){
+			generateFruit();
 		}
 		if(Math.random() < genUmbel){
 			generateItemUmbella();
@@ -80,15 +91,27 @@ public class GameEngine implements KeyListener, GameReporter{
 			generateItemClear();
 		}
 		
-		Iterator<Enemy> e_iter = enemies.iterator();
-		while(e_iter.hasNext()){
-			Enemy e = e_iter.next();
-			e.proceed();
+		Iterator<RotFruit> rt_iter = rotFruits.iterator();
+		while(rt_iter.hasNext()){
+			RotFruit rt = rt_iter.next();
+			rt.proceed();
 			
-			if(!e.isAlive()){
-				e_iter.remove();
-				gp.sprites.remove(e);
-				score += 100;
+			if(!rt.isAlive()){
+				rt_iter.remove();
+				gp.sprites.remove(rt);
+				//score += 100;
+			}
+		}
+		
+		Iterator<Fruit> f_iter = fruits.iterator();
+		while(f_iter.hasNext()){
+			Fruit f = f_iter.next();
+			f.proceed();
+			
+			if(!f.isAlive()){
+				f_iter.remove();
+				gp.sprites.remove(f);
+				//score += 100;
 			}
 		}
 		
@@ -100,7 +123,7 @@ public class GameEngine implements KeyListener, GameReporter{
 			if(!u.isAlive()){
 				u_iter.remove();
 				gp.sprites.remove(u);
-				score += 300;
+				//score += 300;
 			}
 		}
 		
@@ -112,35 +135,48 @@ public class GameEngine implements KeyListener, GameReporter{
 			if(!c.isAlive()){
 				c_iter.remove();
 				gp.sprites.remove(c);
-				score += 500;
+				//score += 500;
 			}
 		}
 		
 		gp.updateGameUI(this);
 		
-		Rectangle2D.Double vr = v.getRectangle();
-		Rectangle2D.Double er;
+		Rectangle2D.Double bs = b.getRectangle();
+		Rectangle2D.Double rt;
+		Rectangle2D.Double fr;
 		Rectangle2D.Double itemUmbel;
 		Rectangle2D.Double umbella;
 		Rectangle2D.Double itemClears;
-		for(Enemy e : enemies){
-			er = e.getRectangle();
-			if(er.intersects(vr)){
-				die();
+		for(RotFruit r : rotFruits){
+			rt = r.getRectangle();
+			if(rt.intersects(bs)){
+				r.notAlive();
+				score -= 1000;
 				return;
 			}
 			if(statusUmbel){
 				umbella = umbel.getRectangle();
-				if(er.intersects(umbella)){
+				if(rt.intersects(umbella)){
 					timeUmbel = 0;	
-					e.notAlive();
+					r.notAlive();
 				}
 			}
 		}
+		
+		for(Fruit f : fruits){
+			fr = f.getRectangle();
+			if(fr.intersects(bs)){
+				f.notAlive();
+				score += 200;
+				return;
+			}
+		}
+		
 		for(ItemUmbella u : umbellas){
 			itemUmbel = u.getRectangle();
-			if(itemUmbel.intersects(vr)){
+			if(itemUmbel.intersects(bs)){
 				u.notAlive();
+				score += 500;
 				if(!statusUmbel){
 					generateUmbella();
 					timeUmbel = 320;
@@ -150,9 +186,10 @@ public class GameEngine implements KeyListener, GameReporter{
 		}
 		for(ItemClear c : clears){
 			itemClears = c.getRectangle();
-			if(itemClears.intersects(vr)){
+			if(itemClears.intersects(bs)){
 				c.notAlive();
-				clearEnemy();
+				score += 500;
+				clearRotFruit();
 			}
 		}
 		
@@ -170,34 +207,34 @@ public class GameEngine implements KeyListener, GameReporter{
 	}
 	
 	void generateUmbella(){
-		umbel = new Umbella(v);
+		umbel = new Umbella(b);
 		gp.sprites.add(umbel);
+	}
+	
+	public void clearRotFruit(){
+		for(RotFruit r : rotFruits){
+			r.notAlive();
+			gp.sprites.remove(r);
+		}
 	}
 	
 	void controlVehicle(KeyEvent e) {
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_LEFT:
-			v.move(-1);
+			b.move(-1);
 			if(umbel != null){
 				umbel.getPosition();
 			}
 			break;
 		case KeyEvent.VK_RIGHT:
-			v.move(1);
+			b.move(1);
 			if(umbel != null){
 				umbel.getPosition();
 			}
 			break;
 		case KeyEvent.VK_D:
-			difficulty += 0.1;
+			genRotFruit += 0.1;
 			break;
-		}
-	}
-	
-	public void clearEnemy(){
-		for(Enemy e : enemies){
-			e.notAlive();
-			gp.sprites.remove(e);
 		}
 	}
 	

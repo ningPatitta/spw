@@ -6,14 +6,14 @@ import javax.swing.JFrame;
 
 public class Main {
 	public static void main(String[] args){
-		JFrame frame = new JFrame("Space War");
+		JFrame frame = new JFrame("--Drop Fruits--");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(400, 650);
 		frame.getContentPane().setLayout(new BorderLayout());
 		
-		SpaceShip v = new SpaceShip(180, 550, 50, 50);
+		Basket b = new Basket(180, 535, 60, 60);
 		GamePanel gp = new GamePanel();
-		GameEngine engine = new GameEngine(gp, v);
+		GameEngine engine = new GameEngine(gp, b);
 		frame.addKeyListener(engine);
 		frame.getContentPane().add(gp, BorderLayout.CENTER);
 		frame.setVisible(true);
