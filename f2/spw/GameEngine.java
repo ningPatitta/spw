@@ -18,12 +18,14 @@ public class GameEngine implements KeyListener, GameReporter{
 	private ArrayList<Fruit> fruits = new ArrayList<Fruit>();	
 	private ArrayList<ItemUmbella> umbellas = new ArrayList<ItemUmbella>();
 	private ArrayList<ItemClear> clears = new ArrayList<ItemClear>();
+	private ArrayList<ItemHeart> hearts = new ArrayList<ItemHeart>();
 	
-	private Basket b;	
+	private Basket b;
 	
 	private Timer timer;
 	
 	private long score = 0;
+	private double genHeart = 0.005;
 	private double genRotFruit = 0.05;
 	private double genFruit = 0.1;
 	private double genUmbel = 0.007;
@@ -36,7 +38,6 @@ public class GameEngine implements KeyListener, GameReporter{
 	public GameEngine(GamePanel gp, Basket b) {
 		this.gp = gp;
 		this.b = b;		
-		
 		gp.sprites.add(b);
 		
 		timer = new Timer(50, new ActionListener() {
@@ -77,6 +78,12 @@ public class GameEngine implements KeyListener, GameReporter{
 		clears.add(c);
 	}
 	
+	private void generateItemHeart(){
+		ItemHeart h = new ItemHeart((int)(Math.random()*390), 30);
+		gp.sprites.add(h);
+		hearts.add(h);
+	}
+	
 	private void process(){
 		if(Math.random() < genRotFruit){
 			generateRotFruit();
@@ -89,6 +96,9 @@ public class GameEngine implements KeyListener, GameReporter{
 		}
 		if(Math.random() < genClear){
 			generateItemClear();
+		}
+		if(Math.random() < genHeart){
+			generateItemHeart();
 		}
 		
 		Iterator<RotFruit> rt_iter = rotFruits.iterator();
@@ -139,24 +149,38 @@ public class GameEngine implements KeyListener, GameReporter{
 			}
 		}
 		
+		Iterator<ItemHeart> h_iter = hearts.iterator();
+		while(h_iter.hasNext()){
+			ItemHeart h = h_iter.next();
+			h.proceed();
+			
+			if(!h.isAlive()){
+				h_iter.remove();
+				gp.sprites.remove(h);
+			}
+		}
+		
 		gp.updateGameUI(this);
 		
 		Rectangle2D.Double bs = b.getRectangle();
-		Rectangle2D.Double rt;
-		Rectangle2D.Double fr;
+		Rectangle2D.Double rotfruit;
+		Rectangle2D.Double fruit;
 		Rectangle2D.Double itemUmbel;
 		Rectangle2D.Double umbella;
 		Rectangle2D.Double itemClears;
+		Rectangle2D.Double heart;
+		
 		for(RotFruit r : rotFruits){
-			rt = r.getRectangle();
-			if(rt.intersects(bs)){
+			rotfruit = r.getRectangle();
+			if(rotfruit.intersects(bs)){
 				r.notAlive();
+				b.setLife();
 				score -= 1000;
 				return;
 			}
 			if(statusUmbel){
 				umbella = umbel.getRectangle();
-				if(rt.intersects(umbella)){
+				if(rotfruit.intersects(umbella)){
 					timeUmbel = 0;	
 					r.notAlive();
 				}
@@ -164,10 +188,19 @@ public class GameEngine implements KeyListener, GameReporter{
 		}
 		
 		for(Fruit f : fruits){
-			fr = f.getRectangle();
-			if(fr.intersects(bs)){
+			fruit = f.getRectangle();
+			if(fruit.intersects(bs)){
 				f.notAlive();
 				score += 200;
+				return;
+			}
+		}
+		
+		for(ItemHeart h : hearts){
+			heart = h.getRectangle();
+			if(heart.intersects(bs)){
+				b.setItemHeart();
+				h.notAlive();
 				return;
 			}
 		}
@@ -192,10 +225,14 @@ public class GameEngine implements KeyListener, GameReporter{
 				clearRotFruit();
 			}
 		}
-		
+		if(b.getLife() == 0){
+			die();
+		}
+			
 		if(timeUmbel > 0){
 			timeUmbel--;
 		}
+		
 		else{
 			statusUmbel = false;
 			gp.sprites.remove(umbel);
@@ -240,6 +277,10 @@ public class GameEngine implements KeyListener, GameReporter{
 	
 	public long getScore(){
 		return score;
+	}
+	
+	public int getLife(){
+		return b.getLife();
 	}
 	
 	@Override

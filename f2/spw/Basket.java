@@ -13,9 +13,11 @@ public class Basket extends Sprite{
 	private String picbasket;
 	private Image picture;
 	int step = 8;
+	private int life;
 	
 	public Basket(int x, int y, int width, int height) {
 		super(x, y, width, height);
+		life = 4;
 		try{
 			picbasket = "f2/spw/img/basket.gif";
 			picture = ImageIO.read(new File(picbasket));
@@ -55,5 +57,17 @@ public class Basket extends Sprite{
 	public int getHeight(){
 		return height;
 	}
-
+	
+	public int getLife(){
+		return life;
+	}
+	
+	public void setLife(){
+		life--;
+	}
+	public void setItemHeart(){
+		if(life < 4){
+			life++;
+		}
+	}
 }

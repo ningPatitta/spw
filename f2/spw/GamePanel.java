@@ -19,12 +19,16 @@ public class GamePanel extends JPanel {
 	Graphics2D big;
 	ArrayList<Sprite> sprites = new ArrayList<Sprite>();
 	private String picBg;
-	private Image picture;
+	private String picHeart;
+	private Image pictureBg;
+	private Image pictureHeart;
 	
 	public GamePanel() {
 		try{
 			picBg = "f2/spw/img/bgCrop.jpg";
-			picture = ImageIO.read(new File(picBg));	
+			picHeart = "f2/spw/img/heart.gif";
+			pictureBg = ImageIO.read(new File(picBg));
+			pictureHeart = ImageIO.read(new File(picHeart));			
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -35,11 +39,14 @@ public class GamePanel extends JPanel {
 
 	public void updateGameUI(GameReporter reporter){
 		big.clearRect(0, 0, 400, 600);
-		big.drawImage(picture, 0, 0, null);
+		big.drawImage(pictureBg, 0, 0, null);
 		big.setColor(Color.BLACK);		
 		big.drawString(String.format("%08d", reporter.getScore()), 300, 40);
 		for(Sprite s : sprites){
 			s.draw(big);
+		}
+		for(int i=0, j=0 ; i<reporter.getLife() ; i++, j+= 40){
+			big.drawImage(pictureHeart, j, 0, 20, 20, null);
 		}
 		
 		repaint();

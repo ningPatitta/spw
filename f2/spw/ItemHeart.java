@@ -1,5 +1,5 @@
 package f2.spw;
-
+ 
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Graphics2D;
@@ -9,25 +9,25 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public class ItemClear extends Sprite{
+public class ItemHeart extends Sprite{
 	public static final int Y_TO_FADE = 400;
 	public static final int Y_TO_DIE = 600;
 	
-	private String picItemClear;
+	private String picIemHeart;
 	private Image picture;
 	
 	private int step = 8;
 	private boolean alive = true;
 	
-	public ItemClear(int x, int y){
-		super(x, y, 30, 30);
+	public ItemHeart(int x, int y){
+		super(x, y, 25, 25);
 		try{
-			picItemClear = "f2/spw/img/clear.gif";
-			picture = ImageIO.read(new File(picItemClear));
+			picIemHeart = "f2/spw/img/itemheart.gif";
+			picture = ImageIO.read(new File(picIemHeart));
 		}catch(IOException e){
 			e.printStackTrace();
 		}
-	}	
+	}
 	
 	@Override
 	public void draw(Graphics2D g) {
