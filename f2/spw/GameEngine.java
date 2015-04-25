@@ -19,6 +19,7 @@ public class GameEngine implements KeyListener, GameReporter{
 	private ArrayList<ItemUmbella> umbellas = new ArrayList<ItemUmbella>();
 	private ArrayList<ItemClear> clears = new ArrayList<ItemClear>();
 	private ArrayList<ItemHeart> hearts = new ArrayList<ItemHeart>();
+	private ArrayList<ItemBomb> bombs = new ArrayList<ItemBomb>();
 	
 	private Basket b;
 	
@@ -30,6 +31,7 @@ public class GameEngine implements KeyListener, GameReporter{
 	private double genFruit = 0.1;
 	private double genUmbel = 0.007;
 	private double genClear = 0.005;
+	private double genBomb = 0.002;
 	
 	private Umbella umbel = null;
 	private int timeUmbel = 0;
@@ -84,6 +86,12 @@ public class GameEngine implements KeyListener, GameReporter{
 		hearts.add(h);
 	}
 	
+	private void generateItemBomb(){
+		ItemBomb b = new ItemBomb((int)(Math.random()*390), 10);
+		gp.sprites.add(b);
+		bombs.add(b);
+	}
+	
 	private void process(){
 		if(Math.random() < genRotFruit){
 			generateRotFruit();
@@ -99,6 +107,9 @@ public class GameEngine implements KeyListener, GameReporter{
 		}
 		if(Math.random() < genHeart){
 			generateItemHeart();
+		}
+		if(Math.random() < genBomb){
+			generateItemBomb();
 		}
 		
 		Iterator<RotFruit> rt_iter = rotFruits.iterator();
@@ -160,6 +171,17 @@ public class GameEngine implements KeyListener, GameReporter{
 			}
 		}
 		
+		Iterator<ItemBomb> b_iter = bombs.iterator();
+		while(b_iter.hasNext()){
+			ItemBomb b = b_iter.next();
+			b.proceed();
+			
+			if(!b.isAlive()){
+				b_iter.remove();
+				gp.sprites.remove(b);
+			}
+		}
+		
 		gp.updateGameUI(this);
 		
 		Rectangle2D.Double bs = b.getRectangle();
@@ -169,7 +191,7 @@ public class GameEngine implements KeyListener, GameReporter{
 		Rectangle2D.Double umbella;
 		Rectangle2D.Double itemClears;
 		Rectangle2D.Double heart;
-		
+		Rectangle2D.Double bomb;
 		for(RotFruit r : rotFruits){
 			rotfruit = r.getRectangle();
 			if(rotfruit.intersects(bs)){
@@ -223,6 +245,14 @@ public class GameEngine implements KeyListener, GameReporter{
 				c.notAlive();
 				score += 500;
 				clearRotFruit();
+			}
+		}
+		for(ItemBomb bo : bombs){
+			bomb = bo.getRectangle();
+			if(bomb.intersects(bs)){
+				bo.notAlive();
+				die();
+				return;
 			}
 		}
 		if(b.getLife() == 0){
