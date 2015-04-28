@@ -38,18 +38,25 @@ public class GamePanel extends JPanel {
 	}
 
 	public void updateGameUI(GameReporter reporter){
-		big.clearRect(0, 0, 400, 600);
-		big.drawImage(pictureBg, 0, 0, null);
-		big.setColor(Color.BLACK);		
-		big.drawString(String.format("%08d", reporter.getScore()), 300, 40);
-		for(Sprite s : sprites){
-			s.draw(big);
-		}
-		for(int i=0, j=0 ; i<reporter.getLife() ; i++, j+= 40){
-			big.drawImage(pictureHeart, j, 0, 20, 20, null);
-		}
-		
+		if(!reporter.get_over()){
+			big.clearRect(0, 0, 400, 600);
+			big.drawImage(pictureBg, 0, 0, null);
+			big.setColor(Color.BLACK);		
+			big.drawString(String.format("%08d", reporter.getScore()), 300, 40);
+			for(Sprite s : sprites){
+				s.draw(big);
+			}
+			for(int i=0, j=0 ; i<reporter.getLife() ; i++, j+= 40){
+				big.drawImage(pictureHeart, j, 0, 20, 20, null);
+			}
 		repaint();
+		}
+		else if(reporter.get_over()){
+			big.drawImage(pictureBg,0,0,400,600,this);
+			big.drawString(String.format("GAME OVER"),160,300);
+			big.drawString(String.format("Press 'Space Bar' to try again"),115,350);
+			repaint();
+		}
 	}
 
 	@Override

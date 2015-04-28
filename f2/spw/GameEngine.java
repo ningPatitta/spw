@@ -36,6 +36,8 @@ public class GameEngine implements KeyListener, GameReporter{
 	private Umbella umbel = null;
 	private int timeUmbel = 0;
 	private boolean statusUmbel = false;
+	private boolean get_over = false;
+	private boolean game_over = false ;
 	
 	public GameEngine(GamePanel gp, Basket b) {
 		this.gp = gp;
@@ -251,12 +253,14 @@ public class GameEngine implements KeyListener, GameReporter{
 			bomb = bo.getRectangle();
 			if(bomb.intersects(bs)){
 				bo.notAlive();
-				die();
+				//die();
+				game_over = true;
 				return;
 			}
 		}
 		if(b.getLife() == 0){
-			die();
+			//die();
+			game_over = true;
 		}
 			
 		if(timeUmbel > 0){
@@ -302,6 +306,9 @@ public class GameEngine implements KeyListener, GameReporter{
 		case KeyEvent.VK_D:
 			genRotFruit += 0.1;
 			break;
+		case KeyEvent.VK_SPACE:
+			reStart();
+			break;
 		}
 	}
 	
@@ -327,5 +334,36 @@ public class GameEngine implements KeyListener, GameReporter{
 	@Override
 	public void keyTyped(KeyEvent e) {
 		//do nothing		
+	}
+	
+	public void reStart(){
+		if(game_over){
+			game_over = false;
+			for(RotFruit r : rotFruits){
+				r.notAlive();
+			}
+			for(Fruit f : fruits){
+				f.notAlive();
+			}
+			for(ItemHeart h : hearts){
+				h.notAlive();
+			}
+			for(ItemUmbella u : umbellas){
+				u.notAlive();
+			}
+			for(ItemClear c : clears){
+				c.notAlive();
+			}
+			for(ItemBomb bo : bombs){
+				bo.notAlive();
+			}
+			score = 0;
+			int life = b.getLife();
+			start();
+		}
+	}
+	
+	public boolean get_over(){
+		return game_over;
 	}
 }
