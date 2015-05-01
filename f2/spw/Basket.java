@@ -57,7 +57,9 @@ public class Basket extends Sprite{
 	public int getHeight(){
 		return height;
 	}
-	
+	public int reStartLife(){
+		return life = 4;
+	}
 	public int getLife(){
 		return life;
 	}

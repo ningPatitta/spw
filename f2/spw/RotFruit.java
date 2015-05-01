@@ -18,7 +18,7 @@ public class RotFruit extends Sprite{
 	private Image picture;
 	private double genPic = 0; 
 	
-	private int step = 10;
+	private int step = 8;
 	private boolean alive = true;
 	
 	public RotFruit(int x, int y) {

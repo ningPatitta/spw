@@ -13,7 +13,7 @@ public class ItemHeart extends Sprite{
 	public static final int Y_TO_FADE = 400;
 	public static final int Y_TO_DIE = 600;
 	
-	private String picIemHeart;
+	private String picItemHeart;
 	private Image picture;
 	
 	private int step = 8;
@@ -22,8 +22,8 @@ public class ItemHeart extends Sprite{
 	public ItemHeart(int x, int y){
 		super(x, y, 25, 25);
 		try{
-			picIemHeart = "f2/spw/img/itemheart.gif";
-			picture = ImageIO.read(new File(picIemHeart));
+			picItemHeart = "f2/spw/img/itemheart.gif";
+			picture = ImageIO.read(new File(picItemHeart));
 		}catch(IOException e){
 			e.printStackTrace();
 		}

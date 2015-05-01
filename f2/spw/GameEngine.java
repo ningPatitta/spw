@@ -26,7 +26,7 @@ public class GameEngine implements KeyListener, GameReporter{
 	private Timer timer;
 	
 	private long score = 0;
-	private double genHeart = 0.005;
+	private double genHeart = 0.002;
 	private double genRotFruit = 0.05;
 	private double genFruit = 0.1;
 	private double genUmbel = 0.007;
@@ -199,7 +199,7 @@ public class GameEngine implements KeyListener, GameReporter{
 			if(rotfruit.intersects(bs)){
 				r.notAlive();
 				b.setLife();
-				score -= 1000;
+				//score -= 1000;
 				return;
 			}
 			if(statusUmbel){
@@ -251,6 +251,13 @@ public class GameEngine implements KeyListener, GameReporter{
 		}
 		for(ItemBomb bo : bombs){
 			bomb = bo.getRectangle();
+			if(umbel != null){
+				umbella = umbel.getRectangle();
+				if(bomb.intersects(umbella)){
+					bo.notAlive();
+					timeUmbel = 0;
+				}
+			}
 			if(bomb.intersects(bs)){
 				bo.notAlive();
 				//die();
@@ -358,7 +365,7 @@ public class GameEngine implements KeyListener, GameReporter{
 				bo.notAlive();
 			}
 			score = 0;
-			int life = b.getLife();
+			int life = b.reStartLife();
 			start();
 		}
 	}

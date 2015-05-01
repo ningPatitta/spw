@@ -22,7 +22,7 @@ public class ItemBomb extends Sprite{
 	public ItemBomb(int x, int y){
 		super(x, y, 25, 25);
 		try{
-			picItemBomb = "f2/spw/img/bomb.jpg";
+			picItemBomb = "f2/spw/img/bomb.gif";
 			picture = ImageIO.read(new File(picItemBomb));
 		}catch(IOException e){
 			e.printStackTrace();
